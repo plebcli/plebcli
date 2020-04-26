@@ -4,10 +4,10 @@
 #include <set>
 
 template <class K, class V>
-class properties {
+class Properties {
 public:
-	properties(std::string filename);
-	properties();
+	Properties(std::string filename);
+	Properties();
 	//~properties();
 
 	V get_property(K key) const;

@@ -7,7 +7,7 @@ PlebCli::PlebCli()
 	__initialize();
 }
 
-PlebCli::PlebCli(properties<std::string, std::string> prop)
+PlebCli::PlebCli(Properties<std::string, std::string> prop)
 {
 	//load_props(prop);
 	this->debug = true;
@@ -30,7 +30,7 @@ void PlebCli::run()
 	while (cli_is_running())
 	{
 		std::vector<std::string> input = parse();
-		token t = tokenize(input);
+		Token t = tokenize(input);
 		respond(t);
 	}
 	// TODO throw exception
@@ -140,7 +140,7 @@ std::vector<std::string>& PlebCli::parse()
 	return *input;
 }
 
-token& PlebCli::tokenize(std::vector<std::string>& input)
+Token& PlebCli::tokenize(std::vector<std::string>& input)
 {
 	if (debug)
 	{
@@ -160,17 +160,20 @@ token& PlebCli::tokenize(std::vector<std::string>& input)
 			int op_idx = line.find(op);
 			if (op_idx != std::string::npos)
 			{
-				if (op == "plius")
-				{
-					std::string left = pleb::trim_copy(line.substr(0, op_idx));
-					std::string right = pleb::trim_copy(line.substr(op_idx + op.length(), line.length() - (op_idx + op.length())));
+				pleb::builder b = pleb::builder();
+				pleb::oper& o = b.build_operator(op);
 
-					int a = std::stoi(left);
-					int b = std::stoi(right);
+				// get exp1 and exp2
+				std::string left = pleb::trim_copy(line.substr(0, op_idx));
+				std::string right = pleb::trim_copy(line.substr(op_idx + op.length(), line.length() - (op_idx + op.length())));
 
-					std::cout << "resultata e " << (a + b) << std::endl;
-					result = true;
-				}
+				// consume the expression
+				pleb::exp exp1 = pleb::exp(left);
+				pleb::exp exp2 = pleb::exp(right);
+				Object operator_result = o.consume(exp1, exp2);
+
+				std::cout << "resultata e " << operator_result.get_data() << std::endl;
+				result = true;
 			}
 		}
 	}
@@ -180,11 +183,11 @@ token& PlebCli::tokenize(std::vector<std::string>& input)
 		std::cout << "pishi na balgarski we" << std::endl;
 	}
 
-	token* t = new token();
+	Token* t = new Token();
 	return *t;
 }
 
-void PlebCli::respond(token& token)
+void PlebCli::respond(Token& token)
 {
 	//std::cout << pleb::RESULT << token.evaluate() << std::endl;
 }

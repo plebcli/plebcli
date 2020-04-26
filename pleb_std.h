@@ -1,7 +1,6 @@
 #pragma once
-#include <iostream>
 #include "properties.h"
-#include "object.h"
+#include "builder.h"
 
 #define DA "da"
 #define NE "ne"
@@ -13,7 +12,7 @@ namespace pleb
 
 	const std::set<std::string> keywords = { "promenliva", "funkciq" };
 
-	const std::set<std::string> operators = { "plius", "minus", "po", "deleno", "e ravno na" };
+	const std::set<std::string> operators = { "plius", "minus", "po", "deleno na", "e ravno na" };
 
 	const static std::string CLI_PREVIEW = "pleb>";
 
@@ -31,7 +30,11 @@ namespace pleb
 	};
 
 	// types
-	using obj = object;
+	using builder = Builder;
+	using oper = Operator;
+	using func = Function;
+	using exp = Expression;
+	using obj = Object;
 
 	static inline void ltrim(std::string& s) {
 		s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {

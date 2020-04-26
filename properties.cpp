@@ -1,13 +1,13 @@
 #include "properties.h"
 
 template <class K, class V>
-properties<K, V>::properties(std::string filename)
+Properties<K, V>::Properties(std::string filename)
 {
 	// read file and load properties
 }
 
 template <class K, class V>
-properties<K, V>::properties()
+Properties<K, V>::Properties()
 {
 	// read file and load properties
 }
@@ -19,13 +19,13 @@ properties<K, V>::properties()
 //}
 
 template <class K, class V>
-V properties<K, V>::get_property(K key) const
+V Properties<K, V>::get_property(K key) const
 {
 	return this->m_props.find(key);
 }
 
 template <class K, class V>
-void properties<K, V>::set_property(K key, V value)
+void Properties<K, V>::set_property(K key, V value)
 {
 
 }

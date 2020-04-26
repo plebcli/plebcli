@@ -4,7 +4,7 @@
 #include <set>
 #include <map>
 
-class token
+class Token
 {
 
 };
@@ -13,7 +13,7 @@ class PlebCli {
 
 	public:
 		PlebCli();
-		PlebCli(properties<std::string, std::string> prop);
+		PlebCli(Properties<std::string, std::string> prop);
 		~PlebCli();
 
 	public:
@@ -24,8 +24,8 @@ class PlebCli {
 		bool cli_is_running();
 		std::vector<std::string>& parse();
 		bool validate(std::vector<std::string>& input);
-		token& tokenize(std::vector<std::string>& input);
-		void respond(token& token);
+		Token& tokenize(std::vector<std::string>& input);
+		void respond(Token& token);
 		void run();
 
 	private:
