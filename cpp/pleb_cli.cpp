@@ -3,7 +3,7 @@
 PlebCli::PlebCli()
 {
 	// TODO twa sh se mahme s props
-	this->debug = false;
+	this->debug = true;
 	__initialize();
 }
 
@@ -41,19 +41,12 @@ void PlebCli::__initialize()
 	this->m_is_running = false;
 	this->m_defined_objects = std::map<std::string, std::map<std::string, pleb::obj>>();
 
-	// loop through all keywords and create empty map inside the defined objects
-	std::set<std::string>::iterator it = pleb::keywords.begin();
-	while (it != pleb::keywords.end())
-	{
-		// for each keyword create empty map with key that keyword name
-		m_defined_objects.insert(std::pair<std::string, 
-								 std::map<std::string, pleb::obj>>(*it, std::map<std::string, pleb::obj>()));
-		it++;
-	}
+	m_defined_objects["variables"] = std::map<std::string, pleb::obj>();
+	m_defined_objects["functions"] = std::map<std::string, pleb::obj>();
 
 	if (debug)
 	{
-		std::cout << "Defined keywords are: ";
+		std::cout << "Defined objects are: ";
 		// print all keywords in the map
 		for (std::map<std::string, std::map<std::string, pleb::obj>>::const_iterator it = m_defined_objects.begin();
 			 it != m_defined_objects.end();
@@ -151,30 +144,56 @@ Token& PlebCli::tokenize(std::vector<std::string>& input)
 
 	for (auto line : input)
 	{
-		// check for predefined functions
-
-		// check for predefined operators
-		for (std::string op : pleb::operators)
+		try 
 		{
-			// if the operator is in the middle of the expression then it is valid
-			int op_idx = line.find(op);
-			if (op_idx != std::string::npos)
+			std::smatch match;
+			if (std::regex_search(line, match, pleb::VARIABLE_REGEX) && match.size() > 1)
 			{
-				pleb::builder b = pleb::builder();
-				pleb::oper& o = b.build_operator(op);
-
-				// get exp1 and exp2
-				std::string left = pleb::trim_copy(line.substr(0, op_idx));
-				std::string right = pleb::trim_copy(line.substr(op_idx + op.length(), line.length() - (op_idx + op.length())));
-
-				// consume the expression
-				pleb::exp exp1 = pleb::exp(left);
-				pleb::exp exp2 = pleb::exp(right);
-				Object operator_result = o.consume(exp1, exp2);
-
-				std::cout << "resultata e " << operator_result.get_data() << std::endl;
-				result = true;
+				// check if current line is variable definition
+				pleb::variable& v = register_variable(line);
+				continue;
 			}
+			else if (std::regex_search(line, match, pleb::VARIABLE_REGEX) && match.size() > 1)
+			{
+				// check if current line is definition of function
+				// register_function();
+				// TODO
+			}
+			else
+			{
+				// TODO
+			}
+			
+
+			// check for predefined functions
+
+			// check for predefined operators
+			for (std::string op : pleb::operators)
+			{
+				// if the operator is in the middle of the expression then it is valid
+				int op_idx = line.find(op);
+				if (op_idx != std::string::npos)
+				{
+					pleb::builder b = pleb::builder();
+					pleb::oper& o = b.build_operator(op);
+
+					// get exp1 and exp2
+					std::string left = pleb::trim_copy(line.substr(0, op_idx));
+					std::string right = pleb::trim_copy(line.substr(op_idx + op.length(), line.length() - (op_idx + op.length())));
+
+					// consume the expression
+					pleb::exp exp1 = pleb::exp(left);
+					pleb::exp exp2 = pleb::exp(right);
+					Object operator_result = o.consume(exp1, exp2);
+
+					std::cout << "resultata e " << operator_result.get_data() << std::endl;
+					result = true;
+				}
+			}
+		}
+		catch (std::regex_error & e)
+		{
+			std::cout << "error: " << e.what() << std::endl;
 		}
 	}
 
@@ -190,4 +209,34 @@ Token& PlebCli::tokenize(std::vector<std::string>& input)
 void PlebCli::respond(Token& token)
 {
 	//std::cout << pleb::RESULT << token.evaluate() << std::endl;
+}
+
+pleb::variable& PlebCli::register_variable(std::string variable_definition)
+{
+	// get variable name
+	std::string var_name = "test";
+
+	// get variable value
+	std::string var_value = "6";
+
+	pleb::variable v = pleb::variable(var_name, var_value);
+
+	std::pair<std::string, pleb::obj> variable_def = std::pair<std::string, pleb::obj>(var_name, v);
+	m_defined_objects["variables"].insert(variable_def);
+
+	if (debug)
+	{
+		//std::cout << "Added variable " << v << std::endl;
+		std::cout << "Defined objects are: ";
+		// print all keywords in the map
+		for (std::map<std::string, std::map<std::string, pleb::obj>>::const_iterator it = m_defined_objects.begin();
+			it != m_defined_objects.end();
+			++it)
+		{
+			std::cout << it->first << " ";
+		}
+		std::cout << std::endl;
+	}
+
+	return v;
 }

@@ -28,6 +28,9 @@ class PlebCli {
 		void respond(Token& token);
 		void run();
 
+		// register
+		pleb::variable& register_variable(std::string variable_definition);
+
 	private:
 		bool debug;
 		bool m_is_running;

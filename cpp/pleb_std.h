@@ -1,4 +1,5 @@
 #pragma once
+#include <regex>
 #include "properties.h"
 #include "builder.h"
 
@@ -9,8 +10,11 @@
 
 namespace pleb
 {
+	const std::regex VARIABLE_REGEX = std::regex("/definirai promenliva ([a-zA-Z][^\s]+) ravna na .*/");
 
-	const std::set<std::string> keywords = { "promenliva", "funkciq" };
+	const std::regex FUNCTION_REGEX = std::regex("definirai funkciq ([a-zA-Z][^\s]+) s parametri \(([^,]*)(, ?([^,]*))*\) koqto pravi");
+
+	const std::set<std::string> keywords = { "definirai", "promenliva", "funkciq", "ako", "to" };
 
 	const std::set<std::string> operators = { "plius", "minus", "po", "deleno na", "e ravno na" };
 
@@ -35,6 +39,7 @@ namespace pleb
 	using func = Function;
 	using exp = Expression;
 	using obj = Object;
+	using variable = Variable;
 
 	static inline void ltrim(std::string& s) {
 		s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
