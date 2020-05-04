@@ -1,0 +1,21 @@
+definirai promenliva x ravna na 6
+
+definirai promenliva y ravna na 8
+
+definirai funkciq x s parametri () {
+
+}
+
+definirai funkciq z s parametri (a, b, c) {
+    vurni a + b + c
+}
+
+definirai funkciq main s parametri() {
+    x
+    ako luja {
+        y
+    }
+    inache {
+        zdr
+    }
+}
