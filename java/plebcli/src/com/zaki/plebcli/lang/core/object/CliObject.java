@@ -7,17 +7,24 @@ import java.util.Objects;
 
 public abstract class CliObject {
 
+    private final ObjectType objectType;
+
     private final String name;
 
-    public CliObject(String name) throws InvalidDefinitionException {
+    public CliObject(String name, ObjectType objectType) throws InvalidDefinitionException {
         if (validate() && Keywords.getKeywords().contains(name)) {
             throw new InvalidDefinitionException(name + " e zapazena kliuchova duma");
         }
         this.name = name;
+        this.objectType = objectType;
     }
 
     public String getName() {
         return name;
+    }
+
+    public ObjectType getObjectType() {
+        return objectType;
     }
 
     public abstract String toString();

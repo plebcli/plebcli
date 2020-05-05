@@ -21,6 +21,8 @@ public interface Callable {
         for (CliObject o : localObjects) {
             if (o instanceof Callable) {
                 ((Callable) o).call(localMemory);
+            } else if (o instanceof Operator) {
+                ((Operator) o).operate(localMemory);
             }
         }
     }

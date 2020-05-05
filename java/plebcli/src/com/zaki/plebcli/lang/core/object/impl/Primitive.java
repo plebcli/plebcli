@@ -1,25 +1,21 @@
 package com.zaki.plebcli.lang.core.object.impl;
 
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
-import com.zaki.plebcli.cli.memory.ObjectHolder;
 import com.zaki.plebcli.lang.core.object.CliObject;
 import com.zaki.plebcli.lang.core.object.ObjectType;
 
-public abstract class Operator extends CliObject {
-
-    public Operator(String name) throws InvalidDefinitionException {
-        super(name, ObjectType.OPERATOR);
+public class Primitive extends CliObject {
+    public Primitive(String name) throws InvalidDefinitionException {
+        super(name, ObjectType.PRIMITIVE);
     }
 
     @Override
     public String toString() {
-        return "operator " + getName();
+        return getName();
     }
 
     @Override
     protected boolean validate() {
         return false;
     }
-
-    public abstract void operate(ObjectHolder memory) throws InvalidDefinitionException;
 }

@@ -1,5 +1,6 @@
 package com.zaki.plebcli.cli.memory;
 
+import com.sun.istack.internal.NotNull;
 import com.zaki.plebcli.lang.core.object.CliObject;
 import com.zaki.plebcli.lang.core.object.ObjectType;
 
@@ -13,11 +14,11 @@ public abstract class ObjectHolder {
         this.objects = new HashMap<>();
     }
 
-    public void addObject(ObjectType type, CliObject obj) {
-        objects.computeIfAbsent(type, k -> new HashSet<>()).add(obj);
+    public void addObject(@NotNull CliObject obj) {
+        objects.computeIfAbsent(obj.getObjectType(), k -> new HashSet<>()).add(obj);
     }
 
-    public List<CliObject> getObjectByName(String s) {
+    public List<CliObject> getObjectByName(@NotNull String s) {
 
         List<CliObject> result = new ArrayList<>();
 

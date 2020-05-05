@@ -1,45 +1,38 @@
 package com.zaki.plebcli.cli;
 
+import com.sun.istack.internal.NotNull;
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
 import com.zaki.plebcli.cli.memory.GlobalObjectHolder;
 import com.zaki.plebcli.cli.memory.ObjectHolder;
 import com.zaki.plebcli.lang.Keywords;
 import com.zaki.plebcli.lang.core.expression.ExpressionEvaluator;
 import com.zaki.plebcli.lang.core.object.CliObject;
-import com.zaki.plebcli.lang.core.object.ObjectType;
 import com.zaki.plebcli.lang.core.object.impl.Function;
 import com.zaki.plebcli.lang.core.object.impl.Operator;
+import com.zaki.plebcli.lang.core.object.impl.Primitive;
 import com.zaki.plebcli.lang.core.object.impl.Variable;
+import com.zaki.plebcli.lang.core.object.impl.operator.Block;
 import com.zaki.plebcli.lang.core.object.impl.operator.OperatorBuilder;
 import com.zaki.plebcli.util.CliUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Tokenizer {
 
-    private static final String SPACE = " ";
+    private static final String NUMBER_REGEX = "^[0-9]+$";
 
-    private static final String COMMA = ",";
-
-    private static final String OPEN_BODY = "{";
-
-    private static final String CLOSE_BODY = "}";
-
-    private static final String PARAMETERS_START = "(";
-
-    private static final String PARAMETERS_END = ")";
+    private static final String STRING_REGEX = "\"(.*?)\"";
 
     public Tokenizer() {
         CliUtils.noop();
     }
 
-    public List<CliObject> getObject(Stack<String> userInput, ObjectHolder currentObjectHolder) throws InvalidDefinitionException {
+    public List<CliObject> getObject(@NotNull Stack<String> userInput, @NotNull ObjectHolder currentObjectHolder) throws InvalidDefinitionException {
 
         List<CliObject> result = new ArrayList<>();
-        CliObject obj = null;
-        ObjectType type = null;
+        CliObject obj;
 
         int skip = 0;
         for (int i = 0; i < userInput.size(); i++) {
@@ -49,110 +42,123 @@ public class Tokenizer {
                 continue;
             }
 
-            boolean existing = false;
-
             if (skip != 0) {
                 skip--;
                 continue;
             }
             String s = userInput.get(i).trim();
-            // check for defining something
-            if (s.startsWith(Keywords.DEFINE)) {
-                s = removeInputPart(s, Keywords.DEFINE);
 
-                // check for variable or function
-                if (s.startsWith(Keywords.VARIABLE)) {
-                    s = removeInputPart(s, Keywords.VARIABLE);
-                    obj = defineVariable(s, currentObjectHolder);
-                    type = ObjectType.VARIABLE;
-                } else if (s.startsWith(Keywords.FUNCTION)) {
-                    s = removeInputPart(s, Keywords.FUNCTION);
-                    obj = defineFunction(s, i + 1, userInput);
-                    // skip body size lines + 1 closing bracket
-                    skip = ((Function) obj).getBody().size() + 1;
-                    type = ObjectType.FUNCTION;
-                } else {
-                    throw new InvalidDefinitionException("Nevalidna stoinost " + s);
-                }
-            } else {
-                // check for operators
-                boolean foundOperator = false;
+            obj = getPrimitive(s);
 
-                // check for prefix operators
-                for (String operatorName : Keywords.getPrefixOperators()) {
-                    if (s.startsWith(operatorName)) {
-                        obj = processPrefixOperator(s, userInput, i + 1);
-                        skip = ((Operator) obj).getBody().size() + 1;
-                        type = ObjectType.OPERATOR;
-                        foundOperator = true;
-                        break;
-                    }
-                }
-
-                if (!foundOperator) {
-                    List<CliObject> objects = getObjectByName(s, currentObjectHolder);
-                    if (objects == null || objects.isEmpty()) {
-                        throw new InvalidDefinitionException("Nevalidna stoinost " + s);
-                    }
-
-                    for (CliObject o : objects) {
-                        System.out.println(o.toString());
-                    }
-
-                    existing = true;
-                }
+            if (obj == null) {
+                obj = getDefine(s, userInput, i, currentObjectHolder);
+            }
+            if (obj == null) {
+                obj = getOperator(s, userInput, i, currentObjectHolder);
+            }
+            if (obj == null) {
+                result.addAll(getFromObjectHolder(s, currentObjectHolder));
             }
 
-            if (!existing && obj != null && type != null) {
-                currentObjectHolder.addObject(type, obj);
+            // skip body size lines + 1 closing bracket
+            if (obj instanceof Block) {
+                skip = ((Block) obj).getBlockSize() + 1;
             }
+
             if (obj != null) {
                 result.add(obj);
+            }
+        }
+
+        for (CliObject o : result) {
+
+            boolean existing = true;
+
+            List<CliObject> objects = getObjectByName(o.getName(), currentObjectHolder);
+            if (objects == null || objects.isEmpty()) {
+                existing = false;
+            }
+
+            if (!existing) {
+                currentObjectHolder.addObject(o);
             }
         }
 
         return result;
     }
 
-    private Operator processPrefixOperator(String s, Stack<String> userInput, int bodyIdx) throws InvalidDefinitionException {
+    private List<CliObject> getFromObjectHolder(String s, ObjectHolder currentObjectHolder) {
+        return currentObjectHolder.getObjectByName(s);
+    }
 
-        // get operator name
-        int nameSpaceIdx = s.indexOf(SPACE);
-        if (nameSpaceIdx == -1) {
-            throw new InvalidDefinitionException("Nevalidna stoinost " + s);
-        }
-        String name = s.substring(0, nameSpaceIdx);
-        s = s.substring(nameSpaceIdx).trim();
+    private CliObject getOperator(String s, Stack<String> userInput, int i, ObjectHolder currentObjectHolder) throws InvalidDefinitionException {
 
-        // expected is open body
-        int openBodyIdx = s.indexOf(OPEN_BODY);
-        if (openBodyIdx == -1 || openBodyIdx != s.length() - 1) {
-            throw new InvalidDefinitionException("Nevalidna stoinost " + s);
-        }
+        CliObject obj = null;
 
-        String expression = s.substring(0, openBodyIdx).trim();
-
-        Stack<String> body = new Stack<>();
-
-        boolean closedBody = false;
-        while (bodyIdx != userInput.size()) {
-            String nextLine = userInput.get(bodyIdx);
-            if (nextLine.equals(CLOSE_BODY)) {
-                closedBody = true;
+        // check for prefix operators
+        for (String operatorName : Keywords.getPrefixOperators()) {
+            if (s.startsWith(operatorName)) {
+                s = s.substring(operatorName.length()).trim();
+                obj = processPrefixOperator(operatorName, s, userInput, i + 1);
                 break;
-            } else {
-                if (!nextLine.trim().isEmpty()) {
-                    body.add(nextLine);
-                }
-                bodyIdx++;
             }
         }
 
-        if (!closedBody) {
-            throw new InvalidDefinitionException("Nevalidna stoinost " + userInput);
+        if (obj == null) {
+            // check for infix operators
+            for (String operatorName : Keywords.getInfixOperators()) {
+                if (s.contains(operatorName) && !s.startsWith(operatorName) && !s.endsWith(operatorName)) {
+                    obj = processInfixOperator(s, userInput, i + 1);
+                    break;
+                }
+            }
         }
 
-        return OperatorBuilder.buildPrefix(name, expression, body);
+        return obj;
+    }
+
+    private CliObject getDefine(String s, Stack<String> userInput, int currentIteration, ObjectHolder currentObjectHolder) throws InvalidDefinitionException {
+
+        CliObject obj = null;
+
+        if (s.startsWith(Keywords.DEFINE)) {
+            s = CliUtils.removeInputPart(s, Keywords.DEFINE);
+
+            // check for variable or function
+            if (s.startsWith(Keywords.VARIABLE)) {
+                s = CliUtils.removeInputPart(s, Keywords.VARIABLE);
+                obj = defineVariable(s, currentObjectHolder);
+            } else if (s.startsWith(Keywords.FUNCTION)) {
+                s = CliUtils.removeInputPart(s, Keywords.FUNCTION);
+                obj = defineFunction(s, currentIteration + 1, userInput);
+            } else {
+                throw new InvalidDefinitionException("Nevalidna stoinost " + s);
+            }
+        }
+
+        return obj;
+    }
+
+    private CliObject getPrimitive(@NotNull String s) throws InvalidDefinitionException {
+
+        Pattern numberPattern = Pattern.compile(NUMBER_REGEX);
+        Pattern stringPattern = Pattern.compile(STRING_REGEX);
+        Matcher numberMatcher = numberPattern.matcher(s);
+        Matcher stringMatcher = stringPattern.matcher(s);
+        if (numberMatcher.find() || stringMatcher.find()) {
+            return new Primitive(s);
+        }
+
+        return null;
+    }
+
+    private CliObject processInfixOperator(String s, Stack<String> userInput, int i) {
+
+        return null;
+    }
+
+    private Operator processPrefixOperator(String name, String s, Stack<String> userInput, int bodyIdx) throws InvalidDefinitionException {
+        return OperatorBuilder.buildPrefixOperatorByName(name, s, userInput, bodyIdx);
     }
 
     private List<CliObject> getObjectByName(String s, ObjectHolder currentObjectHolder) {
@@ -166,14 +172,10 @@ public class Tokenizer {
         return result;
     }
 
-    private String removeInputPart(String s, String part) {
-        return s.substring(part.length()).trim();
-    }
-
     private Variable defineVariable(String s, ObjectHolder current) throws InvalidDefinitionException {
 
         // get variable name
-        int nameSpaceIdx = s.indexOf(SPACE);
+        int nameSpaceIdx = s.indexOf(CliUtils.SPACE);
         if (nameSpaceIdx == -1) {
             throw new InvalidDefinitionException("Nevalidna stoinost " + s);
         }
@@ -185,7 +187,7 @@ public class Tokenizer {
         // expected is assigning operation
         if (s.startsWith(Keywords.ASSIGN)) {
             // get the value or expression
-            s = removeInputPart(s, Keywords.ASSIGN);
+            s = CliUtils.removeInputPart(s, Keywords.ASSIGN);
             value = new ExpressionEvaluator().evaluate(current, s);
         } else {
             throw new InvalidDefinitionException("Nevalidna stoinost " + s);
@@ -197,7 +199,7 @@ public class Tokenizer {
     private CliObject defineFunction(String s, int bodyIdx, Stack<String> userInput) throws InvalidDefinitionException {
 
         // get function name
-        int nameSpaceIdx = s.indexOf(SPACE);
+        int nameSpaceIdx = s.indexOf(CliUtils.SPACE);
         if (nameSpaceIdx == -1) {
             throw new InvalidDefinitionException("Nevalidna stoinost " + s);
         }
@@ -208,28 +210,26 @@ public class Tokenizer {
 
         // expected are parameters
         if (s.startsWith(Keywords.PARAMETERS)) {
-            s = removeInputPart(s, Keywords.PARAMETERS);
+            s = CliUtils.removeInputPart(s, Keywords.PARAMETERS);
 
             // get all parameters separated by comma until opening the body
-            int openBodyIdx = s.indexOf(OPEN_BODY);
+            int openBodyIdx = s.indexOf(CliUtils.OPEN_BODY);
             if (openBodyIdx == -1 || openBodyIdx != s.length() - 1) {
                 throw new InvalidDefinitionException("Nevalidna stoinost " + s);
             }
 
             String parametersStr = s.substring(0, openBodyIdx).trim();
 
-            if (!parametersStr.startsWith(PARAMETERS_START) || !parametersStr.endsWith(PARAMETERS_END)) {
+            if (!parametersStr.startsWith(CliUtils.PARAMETERS_START) || !parametersStr.endsWith(CliUtils.PARAMETERS_END)) {
                 throw new InvalidDefinitionException("Nevalidna stoinost " + parametersStr);
             }
 
             parametersStr = parametersStr.substring(1, parametersStr.length() - 1);
 
             if (!"".equals(parametersStr)) {
-                String[] parametersPart = parametersStr.split(COMMA);
+                String[] parametersPart = parametersStr.split(CliUtils.COMMA);
 
-                for (String p : parametersPart) {
-                    parameters.add(p);
-                }
+                parameters.addAll(Arrays.asList(parametersPart));
             }
         } else {
             throw new InvalidDefinitionException("Nevalidna stoinost " + s);
@@ -246,7 +246,7 @@ public class Tokenizer {
         int openBrackets = 1;
         while (bodyIdx != userInput.size()) {
             String nextLine = userInput.get(bodyIdx);
-            if (nextLine.equals(CLOSE_BODY)) {
+            if (nextLine.equals(CliUtils.CLOSE_BODY)) {
                 openBrackets--;
                 if (openBrackets == 0){
                     closedBody = true;
@@ -259,7 +259,7 @@ public class Tokenizer {
                 if (!nextLine.trim().isEmpty()) {
                     body.add(nextLine);
                 }
-                if (nextLine.contains(OPEN_BODY)) {
+                if (nextLine.contains(CliUtils.OPEN_BODY)) {
                     openBrackets++;
                 }
                 bodyIdx++;

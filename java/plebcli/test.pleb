@@ -11,11 +11,6 @@ definirai funkciq z s parametri (a, b, c) {
 }
 
 definirai funkciq main s parametri() {
-    x
-    ako luja {
-        y
-    }
-    inache {
-        zdr
-    }
+    vuvedi zdr
+    izvedi zdr
 }

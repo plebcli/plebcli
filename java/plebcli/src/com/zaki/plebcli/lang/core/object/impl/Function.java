@@ -8,19 +8,20 @@ import com.zaki.plebcli.cli.memory.ObjectHolder;
 import com.zaki.plebcli.lang.Keywords;
 import com.zaki.plebcli.lang.core.object.CliObject;
 import com.zaki.plebcli.lang.core.object.ObjectType;
+import com.zaki.plebcli.lang.core.object.impl.operator.Block;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
-public class Function extends CliObject implements Callable {
+public class Function extends CliObject implements Callable, Block {
 
     private List<String> parameters;
 
     private Stack<String> body;
 
     public Function(String name, List<String> parameters, Stack<String> body) throws InvalidDefinitionException {
-        super(name);
+        super(name, ObjectType.FUNCTION);
         this.parameters = Collections.unmodifiableList(parameters);
         this.body = body;
     }
@@ -45,7 +46,7 @@ public class Function extends CliObject implements Callable {
         // construct local variables from parameters
         for (int i = 0; i < parameters.size(); i++) {
             Variable v = new Variable(parameters.get(i), parameterValues.get(i));
-            localMemory.addObject(ObjectType.VARIABLE, v);
+            localMemory.addObject(v);
         }
 
         processBody(getBody(), localMemory);
@@ -65,7 +66,7 @@ public class Function extends CliObject implements Callable {
 
             for (CliObject obj : objects) {
                 if (obj instanceof Variable) {
-                    localMemory.addObject(ObjectType.VARIABLE, obj);
+                    localMemory.addObject(obj);
                     break;
                 }
             }
@@ -82,5 +83,10 @@ public class Function extends CliObject implements Callable {
     @Override
     protected boolean validate() {
         return true;
+    }
+
+    @Override
+    public int getBlockSize() {
+        return body.size();
     }
 }

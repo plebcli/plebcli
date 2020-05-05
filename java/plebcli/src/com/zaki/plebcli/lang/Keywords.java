@@ -27,7 +27,19 @@ public class Keywords {
 
     public static final String PARAMETERS = "s parametri";
 
-    public static final String CALL = "izvikai";
+    public static final String CALL = "izvikai " + FUNCTION;
+
+    public static final String PLUS = "plius";
+
+    public static final String MINUS = "minus";
+
+    public static final String DIVIDE = "deleno na";
+
+    public static final String MULTIPLY = "umnojeno po";
+
+    public static final String IN = "vuvedi";
+
+    public static final String OUT = "izvedi";
 
     private static Set<String> keywords = new HashSet<>();
 
@@ -52,6 +64,17 @@ public class Keywords {
         prefixOperators.add(ELSE_IF);
         prefixOperators.add(ELSE);
         prefixOperators.add(CALL);
+        prefixOperators.add(IN);
+        prefixOperators.add(OUT);
+    }
+
+    private static Set<String> infixOperators = new HashSet<>();
+
+    static {
+        infixOperators.add(PLUS);
+        infixOperators.add(MINUS);
+        infixOperators.add(DIVIDE);
+        infixOperators.add(MULTIPLY);
     }
 
     private Keywords() {
@@ -64,5 +87,9 @@ public class Keywords {
 
     public static Set<String> getPrefixOperators() {
         return prefixOperators;
+    }
+
+    public static Set<String> getInfixOperators() {
+        return infixOperators;
     }
 }
