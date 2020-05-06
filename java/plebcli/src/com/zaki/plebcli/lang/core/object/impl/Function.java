@@ -1,8 +1,6 @@
 package com.zaki.plebcli.lang.core.object.impl;
 
-import com.zaki.plebcli.cli.Tokenizer;
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
-import com.zaki.plebcli.cli.memory.GlobalObjectHolder;
 import com.zaki.plebcli.cli.memory.LocalObjectHolder;
 import com.zaki.plebcli.cli.memory.ObjectHolder;
 import com.zaki.plebcli.lang.Keywords;
@@ -87,6 +85,8 @@ public class Function extends CliObject implements Callable, Block {
 
     @Override
     public int getBlockSize() {
-        return body.size();
+
+        // add 1 because we do not count } as part of the block
+        return body.size() + 1;
     }
 }

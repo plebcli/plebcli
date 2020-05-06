@@ -23,7 +23,7 @@ public class Keywords {
 
     public static final String ELSE = "inache";
 
-    public static final String ELSE_IF = "ili ako";
+    public static final String ELSE_IF = "inache ako";
 
     public static final String PARAMETERS = "s parametri";
 

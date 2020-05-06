@@ -12,6 +12,6 @@ public class ExpressionEvaluator {
 
         Stack<String> input = new Stack();
         input.add(expression);
-        return new Tokenizer().getObject(input, memory).toString();
+        return new Tokenizer().getObject(input, memory).get(0).toString();
     }
 }

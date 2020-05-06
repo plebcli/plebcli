@@ -15,7 +15,10 @@ import com.zaki.plebcli.lang.core.object.impl.operator.Block;
 import com.zaki.plebcli.lang.core.object.impl.operator.OperatorBuilder;
 import com.zaki.plebcli.util.CliUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,7 +26,7 @@ public class Tokenizer {
 
     private static final String NUMBER_REGEX = "^[0-9]+$";
 
-    private static final String STRING_REGEX = "\"(.*?)\"";
+    private static final String STRING_REGEX = "^\"(.*?)\"$";
 
     public Tokenizer() {
         CliUtils.noop();
@@ -60,13 +63,14 @@ public class Tokenizer {
                 result.addAll(getFromObjectHolder(s, currentObjectHolder));
             }
 
-            // skip body size lines + 1 closing bracket
             if (obj instanceof Block) {
-                skip = ((Block) obj).getBlockSize() + 1;
+                skip = ((Block) obj).getBlockSize();
             }
 
             if (obj != null) {
                 result.add(obj);
+            } else {
+                throw new InvalidDefinitionException(s);
             }
         }
 
@@ -141,15 +145,24 @@ public class Tokenizer {
 
     private CliObject getPrimitive(@NotNull String s) throws InvalidDefinitionException {
 
-        Pattern numberPattern = Pattern.compile(NUMBER_REGEX);
-        Pattern stringPattern = Pattern.compile(STRING_REGEX);
-        Matcher numberMatcher = numberPattern.matcher(s);
-        Matcher stringMatcher = stringPattern.matcher(s);
-        if (numberMatcher.find() || stringMatcher.find()) {
-            return new Primitive(s);
+        Primitive result = null;
+
+        // Primitives are booleans, numbers and strings
+        if (s.equals(Keywords.TRUE) || s.equals(Keywords.FALSE)) {
+            result = new Primitive(s);
         }
 
-        return null;
+        if (result == null) {
+            Pattern numberPattern = Pattern.compile(NUMBER_REGEX);
+            Pattern stringPattern = Pattern.compile(STRING_REGEX);
+            Matcher numberMatcher = numberPattern.matcher(s);
+            Matcher stringMatcher = stringPattern.matcher(s);
+            if (numberMatcher.find() || stringMatcher.find()) {
+                result = new Primitive(s);
+            }
+        }
+
+        return result;
     }
 
     private CliObject processInfixOperator(String s, Stack<String> userInput, int i) {
@@ -158,7 +171,17 @@ public class Tokenizer {
     }
 
     private Operator processPrefixOperator(String name, String s, Stack<String> userInput, int bodyIdx) throws InvalidDefinitionException {
-        return OperatorBuilder.buildPrefixOperatorByName(name, s, userInput, bodyIdx);
+        return OperatorBuilder.buildPrefixOperatorByName(name, s, clearProcessedInput(userInput, bodyIdx));
+    }
+
+    private Stack<String> clearProcessedInput(Stack<String> userInput, int bodyIdx) {
+        Stack<String> clearedInput = new Stack<>();
+
+        for (int i = bodyIdx; i < userInput.size(); i++) {
+            clearedInput.add(userInput.get(i));
+        }
+
+        return clearedInput;
     }
 
     private List<CliObject> getObjectByName(String s, ObjectHolder currentObjectHolder) {

@@ -11,6 +11,13 @@ definirai funkciq z s parametri (a, b, c) {
 }
 
 definirai funkciq main s parametri() {
-    vuvedi zdr
-    izvedi zdr
+    ako luja {
+        izvedi 42
+    }
+    inache ako istina {
+        izvedi "v istina sum"
+    }
+    inache {
+        izvedi "v else sum"
+    }
 }
