@@ -60,7 +60,7 @@ public class Function extends CliObject implements Callable, Block {
 
         LocalObjectHolder localMemory = new LocalObjectHolder();
 
-        // get only the variables from the callers memory
+        // get only the variables from the callers memory 
         for (String param : parameters) {
             List<CliObject> objects = callerMemory.getObjectByName(param);
             if (objects.isEmpty()) {
