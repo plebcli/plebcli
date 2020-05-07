@@ -4,6 +4,7 @@ import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
 import com.zaki.plebcli.cli.memory.ObjectHolder;
 import com.zaki.plebcli.lang.core.object.CliObject;
 import com.zaki.plebcli.lang.core.object.ObjectType;
+import com.zaki.plebcli.lang.core.object.impl.base.Primitive;
 
 public abstract class Operator extends CliObject {
 
@@ -21,5 +22,5 @@ public abstract class Operator extends CliObject {
         return false;
     }
 
-    public abstract void operate(ObjectHolder memory) throws InvalidDefinitionException;
+    public abstract Primitive operate(ObjectHolder memory) throws InvalidDefinitionException;
 }

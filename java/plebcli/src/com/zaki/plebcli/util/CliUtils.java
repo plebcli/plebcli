@@ -1,5 +1,8 @@
 package com.zaki.plebcli.util;
 
+import com.zaki.plebcli.lang.core.object.ObjectType;
+import com.zaki.plebcli.lang.core.object.impl.base.Primitive;
+import com.zaki.plebcli.lang.core.object.impl.base.Void;
 import com.zaki.plebcli.cli.Tokenizer;
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
 import com.zaki.plebcli.cli.memory.ObjectHolder;
@@ -33,21 +36,23 @@ public final class CliUtils {
         return s.substring(part.length()).trim();
     }
 
-    public static void processBlock(ObjectHolder memory, Stack<String> block) throws InvalidDefinitionException {
+    public static Primitive processBlock(ObjectHolder memory, Stack<String> block) throws InvalidDefinitionException {
 
         Tokenizer localTokenizer = new Tokenizer();
         List<CliObject> localObjects = localTokenizer.getObject(block, memory);
 
         for (CliObject o : localObjects) {
+            Primitive result = null;
             if (o instanceof Callable) {
-                ((Callable) o).call(memory);
+                result = ((Callable) o).call(memory);
             } else if (o instanceof Operator) {
-                if (o instanceof InfixOperator) {
-                    ((InfixOperator) o).operateWithResult(memory);
-                } else {
-                    ((Operator) o).operate(memory);
-                }
+                result = ((Operator) o).operate(memory);
+            }
+            if (!(result instanceof Void)) {
+                return result;
             }
         }
+
+        return new Void();
     }
 }

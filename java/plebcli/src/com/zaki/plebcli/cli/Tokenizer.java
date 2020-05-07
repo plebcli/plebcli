@@ -9,7 +9,7 @@ import com.zaki.plebcli.lang.core.expression.ExpressionEvaluator;
 import com.zaki.plebcli.lang.core.object.CliObject;
 import com.zaki.plebcli.lang.core.object.impl.fn.Function;
 import com.zaki.plebcli.lang.core.object.impl.operator.Operator;
-import com.zaki.plebcli.lang.core.object.impl.Primitive;
+import com.zaki.plebcli.lang.core.object.impl.base.Primitive;
 import com.zaki.plebcli.lang.core.object.impl.Variable;
 import com.zaki.plebcli.lang.core.object.impl.Block;
 import com.zaki.plebcli.lang.core.object.impl.operator.OperatorBuilder;
@@ -215,7 +215,7 @@ public class Tokenizer {
         if (s.startsWith(Keywords.ASSIGN)) {
             // get the value or expression
             s = CliUtils.removeInputPart(s, Keywords.ASSIGN);
-            value = new ExpressionEvaluator().evaluate(current, s);
+            value = new ExpressionEvaluator().evaluate(current, s).toString();
         } else {
             throw new InvalidDefinitionException("Nevalidna stoinost " + s);
         }

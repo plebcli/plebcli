@@ -1,6 +1,8 @@
 package com.zaki.plebcli.lang;
 
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
+import com.zaki.plebcli.lang.core.object.impl.base.Primitive;
+import com.zaki.plebcli.util.CliUtils;
 
 public final class CliBoolean {
 
@@ -18,7 +20,7 @@ public final class CliBoolean {
         }
     }
 
-    public static String getCliBoolean(boolean bool) {
-        return bool ? Keywords.TRUE : Keywords.FALSE;
+    public static Primitive getCliBoolean(boolean bool) {
+        return bool ? new Primitive(Keywords.TRUE) : new Primitive(Keywords.FALSE);
     }
 }

@@ -10,6 +10,7 @@ import com.zaki.plebcli.lang.core.object.ObjectType;
 import com.zaki.plebcli.lang.core.object.impl.Block;
 import com.zaki.plebcli.lang.core.object.impl.Callable;
 import com.zaki.plebcli.lang.core.object.impl.Variable;
+import com.zaki.plebcli.lang.core.object.impl.base.Primitive;
 import com.zaki.plebcli.util.CliUtils;
 
 import java.util.Collections;
@@ -37,7 +38,7 @@ public class Function extends CliObject implements Callable, Block {
     }
 
     @Override
-    public void call(List<String> parameterValues) throws InvalidDefinitionException {
+    public Primitive call(List<String> parameterValues) throws InvalidDefinitionException {
 
         LocalObjectHolder localMemory = new LocalObjectHolder();
 
@@ -48,15 +49,15 @@ public class Function extends CliObject implements Callable, Block {
         ExpressionEvaluator evaluator = new ExpressionEvaluator();
         // construct local variables from parameters
         for (int i = 0; i < parameters.size(); i++) {
-            Variable v = new Variable(parameters.get(i), evaluator.evaluate(localMemory, parameterValues.get(i)));
+            Variable v = new Variable(parameters.get(i), evaluator.evaluate(localMemory, parameterValues.get(i)).toString());
             localMemory.addObject(v);
         }
 
-        CliUtils.processBlock(localMemory, getBody());
+        return CliUtils.processBlock(localMemory, getBody());
     }
 
     @Override
-    public void call(ObjectHolder callerMemory) throws InvalidDefinitionException {
+    public Primitive call(ObjectHolder callerMemory) throws InvalidDefinitionException {
 
         LocalObjectHolder localMemory = new LocalObjectHolder();
 
@@ -75,7 +76,7 @@ public class Function extends CliObject implements Callable, Block {
             }
         }
 
-        CliUtils.processBlock(localMemory, getBody());
+        return CliUtils.processBlock(localMemory, getBody());
     }
 
     @Override

@@ -3,8 +3,8 @@ package com.zaki.plebcli.lang.core.object.impl.operator.infix;
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
 import com.zaki.plebcli.cli.memory.ObjectHolder;
 import com.zaki.plebcli.lang.core.expression.ExpressionEvaluator;
+import com.zaki.plebcli.lang.core.object.impl.base.Primitive;
 import com.zaki.plebcli.lang.core.object.impl.operator.Operator;
-import com.zaki.plebcli.util.CliUtils;
 
 public abstract class InfixOperator extends Operator {
 
@@ -27,17 +27,17 @@ public abstract class InfixOperator extends Operator {
     }
 
     public String getLeftValue(ObjectHolder memory) throws InvalidDefinitionException {
-        return new ExpressionEvaluator().evaluate(memory, leftExpression);
+        return new ExpressionEvaluator().evaluate(memory, leftExpression).toString();
     }
 
     public String getRightValue(ObjectHolder memory) throws InvalidDefinitionException {
-        return new ExpressionEvaluator().evaluate(memory, rightExpression);
+        return new ExpressionEvaluator().evaluate(memory, rightExpression).toString();
     }
 
     @Override
-    public void operate(ObjectHolder memory) {
-        CliUtils.noop();
+    public Primitive operate(ObjectHolder memory) throws InvalidDefinitionException {
+        return operateInfix(memory);
     }
 
-    public abstract String operateWithResult(ObjectHolder memory) throws InvalidDefinitionException;
+    public abstract Primitive operateInfix(ObjectHolder memory) throws InvalidDefinitionException;
 }
