@@ -30,6 +30,7 @@ public abstract class ObjectHolder {
             }
         }
 
-        return result;
+        boolean isGlobalObjectHolder = this instanceof GlobalObjectHolder;
+        return result.isEmpty() && !isGlobalObjectHolder ? GlobalObjectHolder.getInstance().getObjectByName(s) : result;
     }
 }

@@ -7,11 +7,11 @@ import com.zaki.plebcli.cli.memory.ObjectHolder;
 import com.zaki.plebcli.lang.Keywords;
 import com.zaki.plebcli.lang.core.expression.ExpressionEvaluator;
 import com.zaki.plebcli.lang.core.object.CliObject;
-import com.zaki.plebcli.lang.core.object.impl.Function;
-import com.zaki.plebcli.lang.core.object.impl.Operator;
+import com.zaki.plebcli.lang.core.object.impl.fn.Function;
+import com.zaki.plebcli.lang.core.object.impl.operator.Operator;
 import com.zaki.plebcli.lang.core.object.impl.Primitive;
 import com.zaki.plebcli.lang.core.object.impl.Variable;
-import com.zaki.plebcli.lang.core.object.impl.operator.Block;
+import com.zaki.plebcli.lang.core.object.impl.Block;
 import com.zaki.plebcli.lang.core.object.impl.operator.OperatorBuilder;
 import com.zaki.plebcli.util.CliUtils;
 
@@ -59,8 +59,11 @@ public class Tokenizer {
             if (obj == null) {
                 obj = getOperator(s, userInput, i, currentObjectHolder);
             }
+            boolean isReference = false;
             if (obj == null) {
+                int prevSize = result.size();
                 result.addAll(getFromObjectHolder(s, currentObjectHolder));
+                isReference = result.size() != prevSize;
             }
 
             if (obj instanceof Block) {
@@ -70,7 +73,9 @@ public class Tokenizer {
             if (obj != null) {
                 result.add(obj);
             } else {
-                throw new InvalidDefinitionException(s);
+                if (!isReference) {
+                    throw new InvalidDefinitionException(s);
+                }
             }
         }
 
@@ -100,7 +105,7 @@ public class Tokenizer {
         CliObject obj = null;
 
         // check for prefix operators
-        for (String operatorName : Keywords.getPrefixOperators()) {
+        for (String operatorName : OperatorBuilder.getPrefixOperators()) {
             if (s.startsWith(operatorName)) {
                 s = s.substring(operatorName.length()).trim();
                 obj = processPrefixOperator(operatorName, s, userInput, i + 1);
@@ -110,9 +115,9 @@ public class Tokenizer {
 
         if (obj == null) {
             // check for infix operators
-            for (String operatorName : Keywords.getInfixOperators()) {
+            for (String operatorName : OperatorBuilder.getInfixOperators()) {
                 if (s.contains(operatorName) && !s.startsWith(operatorName) && !s.endsWith(operatorName)) {
-                    obj = processInfixOperator(s, userInput, i + 1);
+                    obj = processInfixOperator(operatorName, s);
                     break;
                 }
             }
@@ -165,9 +170,8 @@ public class Tokenizer {
         return result;
     }
 
-    private CliObject processInfixOperator(String s, Stack<String> userInput, int i) {
-
-        return null;
+    private CliObject processInfixOperator(String name, String currentLine) throws InvalidDefinitionException {
+        return OperatorBuilder.buildInfixOperatorByName(name, currentLine);
     }
 
     private Operator processPrefixOperator(String name, String s, Stack<String> userInput, int bodyIdx) throws InvalidDefinitionException {

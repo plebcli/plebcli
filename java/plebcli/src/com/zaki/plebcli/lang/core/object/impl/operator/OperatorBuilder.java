@@ -2,23 +2,43 @@ package com.zaki.plebcli.lang.core.object.impl.operator;
 
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
 import com.zaki.plebcli.lang.Keywords;
-import com.zaki.plebcli.lang.core.object.impl.Operator;
-import com.zaki.plebcli.lang.core.object.impl.operator.in.In;
-import com.zaki.plebcli.lang.core.object.impl.operator.out.Out;
+import com.zaki.plebcli.lang.core.object.impl.Block;
+import com.zaki.plebcli.lang.core.object.impl.operator.in.InOperator;
+import com.zaki.plebcli.lang.core.object.impl.operator.infix.arithmetic.DivideOperator;
+import com.zaki.plebcli.lang.core.object.impl.operator.infix.arithmetic.MinusOperator;
+import com.zaki.plebcli.lang.core.object.impl.operator.infix.arithmetic.MultiplyOperator;
+import com.zaki.plebcli.lang.core.object.impl.operator.infix.arithmetic.PlusOperator;
+import com.zaki.plebcli.lang.core.object.impl.operator.infix.comparison.*;
+import com.zaki.plebcli.lang.core.object.impl.operator.out.OutOperator;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 public class OperatorBuilder {
 
-    private static final Map<String, Class<? extends Operator>> operators = new HashMap<>();
+    private static final Map<String, Class<? extends Operator>> prefixOperators = new HashMap<>();
 
     static {
-        operators.put(Keywords.IF, If.class);
-        operators.put(Keywords.CALL, Call.class);
-        operators.put(Keywords.OUT, Out.class);
-        operators.put(Keywords.IN, In.class);
+        prefixOperators.put(Keywords.IF, IfOperator.class);
+        prefixOperators.put(Keywords.CALL, CallOperator.class);
+        prefixOperators.put(Keywords.OUT, OutOperator.class);
+        prefixOperators.put(Keywords.IN, InOperator.class);
+    }
+
+    private static final Map<String, Class<? extends Operator>> infixOperators = new HashMap<>();
+
+    static {
+        infixOperators.put(Keywords.PLUS, PlusOperator.class);
+        infixOperators.put(Keywords.MINUS, MinusOperator.class);
+        infixOperators.put(Keywords.DIVIDE, DivideOperator.class);
+        infixOperators.put(Keywords.MULTIPLY, MultiplyOperator.class);
+        infixOperators.put(Keywords.EQUAL, EqualOperator.class);
+        infixOperators.put(Keywords.LESS_THAN, LessThanOperator.class);
+        infixOperators.put(Keywords.LESS_THAN_OR_EQUAL, LessThanOrEqualOperator.class);
+        infixOperators.put(Keywords.GREATER_THAN, GreaterThanOperator.class);
+        infixOperators.put(Keywords.GREATER_THAN_OR_EQUAL, GreaterThanOrEqualOperator.class);
     }
 
     private OperatorBuilder() {
@@ -29,7 +49,7 @@ public class OperatorBuilder {
 
         Operator result = null;
 
-        Class<? extends Operator> operatorHandler = operators.get(name);
+        Class<? extends Operator> operatorHandler = prefixOperators.get(name);
         if (operatorHandler != null) {
             try {
                 // check whether our operator should have body i.e. {}
@@ -45,5 +65,30 @@ public class OperatorBuilder {
         }
 
         return result;
+    }
+
+    public static Operator buildInfixOperatorByName(String name, String currentLine) throws InvalidDefinitionException {
+
+        Operator result = null;
+
+        Class<? extends Operator> operatorHandler = infixOperators.get(name);
+        if (operatorHandler != null) {
+            try {
+                result = operatorHandler.getConstructor(String.class, String.class).newInstance(name, currentLine);
+            } catch (Exception e) {
+                // TODO log it
+                throw new InvalidDefinitionException(currentLine);
+            }
+        }
+
+        return result;
+    }
+
+    public static Set<String> getInfixOperators() {
+        return infixOperators.keySet();
+    }
+
+    public static Set<String> getPrefixOperators() {
+        return prefixOperators.keySet();
     }
 }

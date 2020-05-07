@@ -5,7 +5,8 @@ import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
 import com.zaki.plebcli.cli.memory.ObjectHolder;
 import com.zaki.plebcli.lang.core.object.CliObject;
 import com.zaki.plebcli.lang.core.object.impl.Callable;
-import com.zaki.plebcli.lang.core.object.impl.Operator;
+import com.zaki.plebcli.lang.core.object.impl.operator.Operator;
+import com.zaki.plebcli.lang.core.object.impl.operator.infix.InfixOperator;
 
 import java.util.List;
 import java.util.Stack;
@@ -41,7 +42,11 @@ public final class CliUtils {
             if (o instanceof Callable) {
                 ((Callable) o).call(memory);
             } else if (o instanceof Operator) {
-                ((Operator) o).operate(memory);
+                if (o instanceof InfixOperator) {
+                    ((InfixOperator) o).operateWithResult(memory);
+                } else {
+                    ((Operator) o).operate(memory);
+                }
             }
         }
     }

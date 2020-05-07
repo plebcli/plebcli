@@ -5,7 +5,7 @@ import com.zaki.plebcli.cli.memory.ObjectHolder;
 import com.zaki.plebcli.lang.CliBoolean;
 import com.zaki.plebcli.lang.Keywords;
 import com.zaki.plebcli.lang.core.expression.ExpressionEvaluator;
-import com.zaki.plebcli.lang.core.object.impl.Operator;
+import com.zaki.plebcli.lang.core.object.impl.Block;
 import com.zaki.plebcli.util.CliUtils;
 import javafx.util.Pair;
 
@@ -13,11 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public class If extends Operator implements Block {
+public class IfOperator extends Operator implements Block {
 
     private List<Pair<String, Stack<String>>> conditions;
 
-    public If(String expression, Stack<String> body) throws InvalidDefinitionException {
+    public IfOperator(String expression, Stack<String> body) throws InvalidDefinitionException {
         super(Keywords.IF);
         build(expression, body);
     }
@@ -45,22 +45,31 @@ public class If extends Operator implements Block {
 
             String currentLine = body.get(currentIndex);
 
+            boolean potentiallyNotOperator = false;
             if (!currentLine.endsWith(CliUtils.OPEN_BODY)) {
-                throw  new InvalidDefinitionException(currentLine);
+                potentiallyNotOperator = true;
+            } else {
+                currentLine = currentLine.substring(0, currentLine.length() - 1).trim();
             }
-            currentLine = currentLine.substring(0, currentLine.length() - 1).trim();
 
             String exp = null;
+            boolean isOperator = false;
             if (currentLine.startsWith(Keywords.ELSE_IF)) {
                 exp = CliUtils.removeInputPart(currentLine, Keywords.ELSE_IF);
+                isOperator = true;
             } else if (currentLine.startsWith(Keywords.ELSE)) {
-                exp = Keywords.TRUE;
                 // if we have 'else' operator then we do not need expression for this operator
                 if (!currentLine.equals(Keywords.ELSE)) {
                     throw new InvalidDefinitionException(currentLine);
                 }
+                exp = Keywords.TRUE;
+                isOperator = true;
             } else {
                 hasMoreExpressions = false;
+            }
+
+            if (isOperator && potentiallyNotOperator) {
+                throw new InvalidDefinitionException(currentLine);
             }
 
             if (hasMoreExpressions) {
@@ -68,10 +77,10 @@ public class If extends Operator implements Block {
                 Stack<String> block = getNextBlock(body, currentIndex);
                 currentIndex += block.size() + 1;
                 conditions.add(new Pair<>(exp, block));
-            }
 
-            if (currentIndex == body.size()) {
-                hasMoreExpressions = false;
+                if (currentIndex == body.size()) {
+                    hasMoreExpressions = false;
+                }
             }
         }
     }

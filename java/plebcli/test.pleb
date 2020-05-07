@@ -1,23 +1,15 @@
-definirai promenliva x ravna na 6
+def var x = 5
+def var y = 9
 
-definirai promenliva y ravna na 8
-
-definirai funkciq x s parametri () {
-
+def function main with parameters() {
+    call function fibonacci with parameters (3)
 }
 
-definirai funkciq z s parametri (a, b, c) {
-    vurni a + b + c
-}
-
-definirai funkciq main s parametri() {
-    ako luja {
-        izvedi 42
+def function fibonacci with parameters(n) {
+    if n == 0 {
+        izvedi n
     }
-    inache ako istina {
-        izvedi "v istina sum"
-    }
-    inache {
-        izvedi "v else sum"
+    else {
+        call function fibonacci with parameters (n - 1)
     }
 }

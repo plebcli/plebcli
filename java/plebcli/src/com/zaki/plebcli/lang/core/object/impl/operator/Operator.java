@@ -1,4 +1,4 @@
-package com.zaki.plebcli.lang.core.object.impl;
+package com.zaki.plebcli.lang.core.object.impl.operator;
 
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
 import com.zaki.plebcli.cli.memory.ObjectHolder;

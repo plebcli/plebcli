@@ -6,27 +6,26 @@ import com.zaki.plebcli.cli.memory.ObjectHolder;
 import com.zaki.plebcli.lang.Keywords;
 import com.zaki.plebcli.lang.core.object.CliObject;
 import com.zaki.plebcli.lang.core.object.impl.Callable;
-import com.zaki.plebcli.lang.core.object.impl.Function;
-import com.zaki.plebcli.lang.core.object.impl.Operator;
+import com.zaki.plebcli.lang.core.object.impl.fn.Function;
 import com.zaki.plebcli.util.CliUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Call extends Operator {
+public class CallOperator extends Operator {
 
     private Callable f;
     private List<String> p;
 
-    public Call(String callLine) throws InvalidDefinitionException {
+    public CallOperator(String callLine) throws InvalidDefinitionException {
         super(Keywords.CALL);
         build(callLine);
     }
 
     @Override
     public void operate(ObjectHolder memory) throws InvalidDefinitionException {
-        f.call(p);
+        f.call(memory);
     }
 
     private void build(String callLine) throws InvalidDefinitionException {

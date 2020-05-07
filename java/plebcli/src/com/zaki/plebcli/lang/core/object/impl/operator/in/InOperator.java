@@ -3,17 +3,17 @@ package com.zaki.plebcli.lang.core.object.impl.operator.in;
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
 import com.zaki.plebcli.cli.memory.ObjectHolder;
 import com.zaki.plebcli.lang.Keywords;
-import com.zaki.plebcli.lang.core.object.impl.Operator;
+import com.zaki.plebcli.lang.core.object.impl.operator.Operator;
 import com.zaki.plebcli.lang.core.object.impl.Variable;
 import com.zaki.plebcli.util.CliUtils;
 
 import java.util.Scanner;
 
-public class In extends Operator {
+public class InOperator extends Operator {
 
     private String varName;
 
-    public In(String varName) throws InvalidDefinitionException {
+    public InOperator(String varName) throws InvalidDefinitionException {
         super(Keywords.IN);
         build(varName);
     }
@@ -27,6 +27,7 @@ public class In extends Operator {
 
     private void build(String s) throws InvalidDefinitionException {
 
+        // TODO proveri dali ne e duma, ako ne e duma hwurli greshka
         if (s.contains(CliUtils.SPACE)) {
             throw new InvalidDefinitionException("Nevalidna stoinost " + s);
         }

@@ -6,10 +6,9 @@ import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
 import com.zaki.plebcli.cli.in.Parser;
 import com.zaki.plebcli.cli.Tokenizer;
 import com.zaki.plebcli.cli.memory.GlobalObjectHolder;
-import com.zaki.plebcli.cli.memory.ObjectHolder;
 import com.zaki.plebcli.cli.out.Responder;
 import com.zaki.plebcli.lang.core.object.CliObject;
-import com.zaki.plebcli.lang.core.object.impl.Function;
+import com.zaki.plebcli.lang.core.object.impl.fn.Function;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +17,6 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CliManager {

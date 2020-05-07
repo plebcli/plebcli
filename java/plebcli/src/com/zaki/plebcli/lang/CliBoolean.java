@@ -17,4 +17,8 @@ public final class CliBoolean {
             throw new InvalidDefinitionException(toParse);
         }
     }
+
+    public static String getCliBoolean(boolean bool) {
+        return bool ? Keywords.TRUE : Keywords.FALSE;
+    }
 }

@@ -1,12 +1,16 @@
-package com.zaki.plebcli.lang.core.object.impl;
+package com.zaki.plebcli.lang.core.object.impl.fn;
 
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
 import com.zaki.plebcli.cli.memory.LocalObjectHolder;
 import com.zaki.plebcli.cli.memory.ObjectHolder;
 import com.zaki.plebcli.lang.Keywords;
+import com.zaki.plebcli.lang.core.expression.ExpressionEvaluator;
 import com.zaki.plebcli.lang.core.object.CliObject;
 import com.zaki.plebcli.lang.core.object.ObjectType;
-import com.zaki.plebcli.lang.core.object.impl.operator.Block;
+import com.zaki.plebcli.lang.core.object.impl.Block;
+import com.zaki.plebcli.lang.core.object.impl.Callable;
+import com.zaki.plebcli.lang.core.object.impl.Variable;
+import com.zaki.plebcli.util.CliUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -41,13 +45,14 @@ public class Function extends CliObject implements Callable, Block {
             throw new IllegalArgumentException("funkciq " + getName() + " ima " + parameters.size() + " na broi parametri, no ti q vikash s " + parameterValues.size());
         }
 
+        ExpressionEvaluator evaluator = new ExpressionEvaluator();
         // construct local variables from parameters
         for (int i = 0; i < parameters.size(); i++) {
-            Variable v = new Variable(parameters.get(i), parameterValues.get(i));
+            Variable v = new Variable(parameters.get(i), evaluator.evaluate(localMemory, parameterValues.get(i)));
             localMemory.addObject(v);
         }
 
-        processBody(getBody(), localMemory);
+        CliUtils.processBlock(localMemory, getBody());
     }
 
     @Override
@@ -70,7 +75,7 @@ public class Function extends CliObject implements Callable, Block {
             }
         }
 
-        processBody(getBody(), localMemory);
+        CliUtils.processBlock(localMemory, getBody());
     }
 
     @Override
