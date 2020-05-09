@@ -6,6 +6,7 @@ import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
 import com.zaki.plebcli.cli.in.Parser;
 import com.zaki.plebcli.cli.Tokenizer;
 import com.zaki.plebcli.cli.memory.GlobalObjectHolder;
+import com.zaki.plebcli.cli.memory.LocalObjectHolder;
 import com.zaki.plebcli.cli.out.Responder;
 import com.zaki.plebcli.lang.core.object.CliObject;
 import com.zaki.plebcli.lang.core.object.impl.fn.Function;
@@ -91,7 +92,7 @@ public class CliManager {
         boolean isMainCalled = false;
         for (CliObject main : mainObjects) {
             if (main instanceof Function) {
-                ((Function) main).call(Collections.emptyList());
+                ((Function) main).call(Collections.emptyList(), new LocalObjectHolder());
                 isMainCalled = true;
                 break;
             }

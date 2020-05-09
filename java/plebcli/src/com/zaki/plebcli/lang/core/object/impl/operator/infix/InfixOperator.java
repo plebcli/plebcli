@@ -1,10 +1,10 @@
 package com.zaki.plebcli.lang.core.object.impl.operator.infix;
 
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
-import com.zaki.plebcli.cli.memory.ObjectHolder;
+import com.zaki.plebcli.cli.memory.LocalObjectHolder;
 import com.zaki.plebcli.lang.core.expression.ExpressionEvaluator;
+import com.zaki.plebcli.lang.core.object.impl.base.Primitive;
 import com.zaki.plebcli.lang.core.object.impl.operator.Operator;
-import com.zaki.plebcli.util.CliUtils;
 
 public abstract class InfixOperator extends Operator {
 
@@ -26,18 +26,18 @@ public abstract class InfixOperator extends Operator {
         return rightExpression;
     }
 
-    public String getLeftValue(ObjectHolder memory) throws InvalidDefinitionException {
-        return new ExpressionEvaluator().evaluate(memory, leftExpression);
+    public String getLeftValue(LocalObjectHolder memory) throws InvalidDefinitionException {
+        return new ExpressionEvaluator().evaluate(memory, leftExpression).toString();
     }
 
-    public String getRightValue(ObjectHolder memory) throws InvalidDefinitionException {
-        return new ExpressionEvaluator().evaluate(memory, rightExpression);
+    public String getRightValue(LocalObjectHolder memory) throws InvalidDefinitionException {
+        return new ExpressionEvaluator().evaluate(memory, rightExpression).toString();
     }
 
     @Override
-    public void operate(ObjectHolder memory) {
-        CliUtils.noop();
+    public Primitive operate(LocalObjectHolder memory) throws InvalidDefinitionException {
+        return operateInfix(memory);
     }
 
-    public abstract String operateWithResult(ObjectHolder memory) throws InvalidDefinitionException;
+    public abstract Primitive operateInfix(LocalObjectHolder memory) throws InvalidDefinitionException;
 }

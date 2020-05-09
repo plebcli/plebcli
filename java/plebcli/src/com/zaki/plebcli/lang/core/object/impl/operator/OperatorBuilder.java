@@ -25,6 +25,7 @@ public class OperatorBuilder {
         prefixOperators.put(Keywords.CALL, CallOperator.class);
         prefixOperators.put(Keywords.OUT, OutOperator.class);
         prefixOperators.put(Keywords.IN, InOperator.class);
+        prefixOperators.put(Keywords.RETURN, ReturnOperator.class);
     }
 
     private static final Map<String, Class<? extends Operator>> infixOperators = new HashMap<>();

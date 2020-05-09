@@ -1,11 +1,10 @@
-package com.zaki.plebcli.lang.core.object.impl;
+package com.zaki.plebcli.lang.core.object.impl.base;
 
-import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
 import com.zaki.plebcli.lang.core.object.CliObject;
 import com.zaki.plebcli.lang.core.object.ObjectType;
 
 public class Primitive extends CliObject {
-    public Primitive(String name) throws InvalidDefinitionException {
+    public Primitive(String name) {
         super(name, ObjectType.PRIMITIVE);
     }
 

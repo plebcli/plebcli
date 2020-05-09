@@ -1,11 +1,13 @@
 package com.zaki.plebcli.lang.core.object.impl.operator;
 
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
-import com.zaki.plebcli.cli.memory.ObjectHolder;
+import com.zaki.plebcli.cli.memory.LocalObjectHolder;
 import com.zaki.plebcli.lang.CliBoolean;
 import com.zaki.plebcli.lang.Keywords;
 import com.zaki.plebcli.lang.core.expression.ExpressionEvaluator;
 import com.zaki.plebcli.lang.core.object.impl.Block;
+import com.zaki.plebcli.lang.core.object.impl.base.Primitive;
+import com.zaki.plebcli.lang.core.object.impl.base.Void;
 import com.zaki.plebcli.util.CliUtils;
 import javafx.util.Pair;
 
@@ -86,16 +88,17 @@ public class IfOperator extends Operator implements Block {
     }
 
     @Override
-    public void operate(ObjectHolder memory) throws InvalidDefinitionException {
+    public Primitive operate(LocalObjectHolder memory) throws InvalidDefinitionException {
 
         ExpressionEvaluator evaluator = new ExpressionEvaluator();
         for (Pair<String, Stack<String>> condition : conditions) {
             // evaluate each condition and the first one to evaluate to Keywords.TRUE will be executed
-            if (CliBoolean.parseBoolean(evaluator.evaluate(memory, condition.getKey()))) {
-                CliUtils.processBlock(memory, condition.getValue());
-                break;
+            if (CliBoolean.parseBoolean(evaluator.evaluate(memory, condition.getKey()).toString())) {
+                return CliUtils.processBlock(memory, condition.getValue());
             }
         }
+
+        return new Void();
     }
 
     @Override

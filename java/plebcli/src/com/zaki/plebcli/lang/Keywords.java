@@ -27,7 +27,7 @@ public class Keywords {
 
     public static final String PARAMETERS = "with parameters";
 
-    public static final String CALL = "call " + FUNCTION;
+    public static final String CALL = "call";
 
     public static final String PLUS = "+";
 
@@ -51,8 +51,13 @@ public class Keywords {
 
     public static final String LESS_THAN = "<";
 
+    public static final String RETURN = "return";
+
+    public static final String VOID = "void";
+
     private static Set<String> keywords = new HashSet<>();
 
+    // TODO add all keywords here and think of way to simplify it
     static {
         keywords.add(DEFINE);
         keywords.add(VARIABLE);
@@ -65,6 +70,7 @@ public class Keywords {
         keywords.add(ELSE);
         keywords.add(ELSE_IF);
         keywords.add(CALL);
+        keywords.add(RETURN);
     }
 
     private Keywords() {

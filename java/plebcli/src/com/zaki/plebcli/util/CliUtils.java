@@ -1,11 +1,16 @@
 package com.zaki.plebcli.util;
 
+import com.zaki.plebcli.cli.memory.LocalObjectHolder;
+import com.zaki.plebcli.lang.core.object.ObjectType;
+import com.zaki.plebcli.lang.core.object.impl.base.Primitive;
+import com.zaki.plebcli.lang.core.object.impl.base.Void;
 import com.zaki.plebcli.cli.Tokenizer;
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
 import com.zaki.plebcli.cli.memory.ObjectHolder;
 import com.zaki.plebcli.lang.core.object.CliObject;
 import com.zaki.plebcli.lang.core.object.impl.Callable;
 import com.zaki.plebcli.lang.core.object.impl.operator.Operator;
+import com.zaki.plebcli.lang.core.object.impl.operator.in.InOperator;
 import com.zaki.plebcli.lang.core.object.impl.operator.infix.InfixOperator;
 
 import java.util.List;
@@ -33,21 +38,23 @@ public final class CliUtils {
         return s.substring(part.length()).trim();
     }
 
-    public static void processBlock(ObjectHolder memory, Stack<String> block) throws InvalidDefinitionException {
+    public static Primitive processBlock(LocalObjectHolder memory, Stack<String> block) throws InvalidDefinitionException {
 
         Tokenizer localTokenizer = new Tokenizer();
         List<CliObject> localObjects = localTokenizer.getObject(block, memory);
 
         for (CliObject o : localObjects) {
+            Primitive result = null;
             if (o instanceof Callable) {
-                ((Callable) o).call(memory);
+                result = ((Callable) o).call(memory.clone());
             } else if (o instanceof Operator) {
-                if (o instanceof InfixOperator) {
-                    ((InfixOperator) o).operateWithResult(memory);
-                } else {
-                    ((Operator) o).operate(memory);
-                }
+                result = ((Operator) o).operate((o instanceof InOperator) ? memory : memory.clone());
+            }
+            if (!(result instanceof Void)) {
+                return result;
             }
         }
+
+        return new Void();
     }
 }

@@ -1,8 +1,11 @@
 package com.zaki.plebcli.lang.core.object.impl.operator.in;
 
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
+import com.zaki.plebcli.cli.memory.LocalObjectHolder;
 import com.zaki.plebcli.cli.memory.ObjectHolder;
 import com.zaki.plebcli.lang.Keywords;
+import com.zaki.plebcli.lang.core.object.impl.base.Primitive;
+import com.zaki.plebcli.lang.core.object.impl.base.Void;
 import com.zaki.plebcli.lang.core.object.impl.operator.Operator;
 import com.zaki.plebcli.lang.core.object.impl.Variable;
 import com.zaki.plebcli.util.CliUtils;
@@ -19,10 +22,11 @@ public class InOperator extends Operator {
     }
 
     @Override
-    public void operate(ObjectHolder memory) throws InvalidDefinitionException {
+    public Primitive operate(LocalObjectHolder memory) throws InvalidDefinitionException {
         Scanner sc = new Scanner(System.in);
         String value = sc.nextLine();
         memory.addObject(new Variable(varName, value));
+        return new Primitive(value);
     }
 
     private void build(String s) throws InvalidDefinitionException {

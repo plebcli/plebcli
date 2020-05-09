@@ -2,10 +2,11 @@ package com.zaki.plebcli.lang.core.object.impl.operator;
 
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
 import com.zaki.plebcli.cli.memory.GlobalObjectHolder;
-import com.zaki.plebcli.cli.memory.ObjectHolder;
+import com.zaki.plebcli.cli.memory.LocalObjectHolder;
 import com.zaki.plebcli.lang.Keywords;
 import com.zaki.plebcli.lang.core.object.CliObject;
 import com.zaki.plebcli.lang.core.object.impl.Callable;
+import com.zaki.plebcli.lang.core.object.impl.base.Primitive;
 import com.zaki.plebcli.lang.core.object.impl.fn.Function;
 import com.zaki.plebcli.util.CliUtils;
 
@@ -24,8 +25,8 @@ public class CallOperator extends Operator {
     }
 
     @Override
-    public void operate(ObjectHolder memory) throws InvalidDefinitionException {
-        f.call(memory);
+    public Primitive operate(LocalObjectHolder memory) throws InvalidDefinitionException {
+        return f.call(p, memory);
     }
 
     private void build(String callLine) throws InvalidDefinitionException {

@@ -3,15 +3,16 @@ package com.zaki.plebcli.cli;
 import com.sun.istack.internal.NotNull;
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
 import com.zaki.plebcli.cli.memory.GlobalObjectHolder;
+import com.zaki.plebcli.cli.memory.LocalObjectHolder;
 import com.zaki.plebcli.cli.memory.ObjectHolder;
 import com.zaki.plebcli.lang.Keywords;
 import com.zaki.plebcli.lang.core.expression.ExpressionEvaluator;
 import com.zaki.plebcli.lang.core.object.CliObject;
+import com.zaki.plebcli.lang.core.object.impl.Block;
+import com.zaki.plebcli.lang.core.object.impl.Variable;
+import com.zaki.plebcli.lang.core.object.impl.base.Primitive;
 import com.zaki.plebcli.lang.core.object.impl.fn.Function;
 import com.zaki.plebcli.lang.core.object.impl.operator.Operator;
-import com.zaki.plebcli.lang.core.object.impl.Primitive;
-import com.zaki.plebcli.lang.core.object.impl.Variable;
-import com.zaki.plebcli.lang.core.object.impl.Block;
 import com.zaki.plebcli.lang.core.object.impl.operator.OperatorBuilder;
 import com.zaki.plebcli.util.CliUtils;
 
@@ -32,7 +33,7 @@ public class Tokenizer {
         CliUtils.noop();
     }
 
-    public List<CliObject> getObject(@NotNull Stack<String> userInput, @NotNull ObjectHolder currentObjectHolder) throws InvalidDefinitionException {
+    public List<CliObject> getObject(@NotNull Stack<String> userInput, @NotNull LocalObjectHolder currentObjectHolder) throws InvalidDefinitionException {
 
         List<CliObject> result = new ArrayList<>();
         CliObject obj;
@@ -84,7 +85,7 @@ public class Tokenizer {
             boolean existing = true;
 
             List<CliObject> objects = getObjectByName(o.getName(), currentObjectHolder);
-            if (objects == null || objects.isEmpty()) {
+            if (objects.isEmpty()) {
                 existing = false;
             }
 
@@ -126,7 +127,7 @@ public class Tokenizer {
         return obj;
     }
 
-    private CliObject getDefine(String s, Stack<String> userInput, int currentIteration, ObjectHolder currentObjectHolder) throws InvalidDefinitionException {
+    private CliObject getDefine(String s, Stack<String> userInput, int currentIteration, LocalObjectHolder currentObjectHolder) throws InvalidDefinitionException {
 
         CliObject obj = null;
 
@@ -188,18 +189,15 @@ public class Tokenizer {
         return clearedInput;
     }
 
-    private List<CliObject> getObjectByName(String s, ObjectHolder currentObjectHolder) {
+    private List<CliObject> getObjectByName(String s, LocalObjectHolder currentObjectHolder) {
 
         List<CliObject> result = currentObjectHolder.getObjectByName(s);
-
-        if (!(currentObjectHolder instanceof GlobalObjectHolder)) {
-            result.addAll(GlobalObjectHolder.getInstance().getObjectByName(s));
-        }
+        result.addAll(GlobalObjectHolder.getInstance().getObjectByName(s));
 
         return result;
     }
 
-    private Variable defineVariable(String s, ObjectHolder current) throws InvalidDefinitionException {
+    private Variable defineVariable(String s, LocalObjectHolder current) throws InvalidDefinitionException {
 
         // get variable name
         int nameSpaceIdx = s.indexOf(CliUtils.SPACE);
@@ -215,7 +213,7 @@ public class Tokenizer {
         if (s.startsWith(Keywords.ASSIGN)) {
             // get the value or expression
             s = CliUtils.removeInputPart(s, Keywords.ASSIGN);
-            value = new ExpressionEvaluator().evaluate(current, s);
+            value = new ExpressionEvaluator().evaluate(current, s).toString();
         } else {
             throw new InvalidDefinitionException("Nevalidna stoinost " + s);
         }
