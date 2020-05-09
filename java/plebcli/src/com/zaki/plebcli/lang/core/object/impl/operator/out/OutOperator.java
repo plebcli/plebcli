@@ -1,10 +1,11 @@
 package com.zaki.plebcli.lang.core.object.impl.operator.out;
 
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
-import com.zaki.plebcli.cli.memory.ObjectHolder;
+import com.zaki.plebcli.cli.memory.LocalObjectHolder;
 import com.zaki.plebcli.lang.Keywords;
 import com.zaki.plebcli.lang.core.expression.ExpressionEvaluator;
 import com.zaki.plebcli.lang.core.object.impl.base.Primitive;
+import com.zaki.plebcli.lang.core.object.impl.base.Void;
 import com.zaki.plebcli.lang.core.object.impl.operator.Operator;
 
 public class OutOperator extends Operator {
@@ -21,8 +22,8 @@ public class OutOperator extends Operator {
     }
 
     @Override
-    public Primitive operate(ObjectHolder memory) throws InvalidDefinitionException {
+    public Primitive operate(LocalObjectHolder memory) throws InvalidDefinitionException {
         System.out.println(new ExpressionEvaluator().evaluate(memory, expression));
-        return null;
+        return new Void();
     }
 }

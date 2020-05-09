@@ -27,7 +27,7 @@ public class Keywords {
 
     public static final String PARAMETERS = "with parameters";
 
-    public static final String CALL = "call " + FUNCTION;
+    public static final String CALL = "call";
 
     public static final String PLUS = "+";
 

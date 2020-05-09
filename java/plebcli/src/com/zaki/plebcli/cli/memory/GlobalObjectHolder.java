@@ -1,6 +1,6 @@
 package com.zaki.plebcli.cli.memory;
 
-public class GlobalObjectHolder extends ObjectHolder {
+public class GlobalObjectHolder extends LocalObjectHolder {
 
     private GlobalObjectHolder() {
 

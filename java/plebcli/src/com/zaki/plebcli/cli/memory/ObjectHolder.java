@@ -15,7 +15,13 @@ public abstract class ObjectHolder {
     }
 
     public void addObject(@NotNull CliObject obj) {
-        objects.computeIfAbsent(obj.getObjectType(), k -> new HashSet<>()).add(obj);
+        if (!objects.containsKey(obj.getObjectType())) {
+            objects.put(obj.getObjectType(), new HashSet<>());
+        }
+        Set<CliObject> objSet = objects.get(obj.getObjectType());
+        objSet.remove(obj);
+        objSet.add(obj);
+        objects.put(obj.getObjectType(), objSet);
     }
 
     public List<CliObject> getObjectByName(@NotNull String s) {
@@ -32,5 +38,9 @@ public abstract class ObjectHolder {
 
         boolean isGlobalObjectHolder = this instanceof GlobalObjectHolder;
         return result.isEmpty() && !isGlobalObjectHolder ? GlobalObjectHolder.getInstance().getObjectByName(s) : result;
+    }
+
+    protected Map<ObjectType, Set<CliObject>> getObjects() {
+        return objects;
     }
 }

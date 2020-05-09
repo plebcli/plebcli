@@ -1,15 +1,22 @@
-def var x = 5
-def var y = 9
-
 def function main with parameters() {
-    call function fibonacci with parameters (3)
+    call fibonacci with parameters (enter x)
+    print call sum with parameters (enter y)
 }
 
 def function fibonacci with parameters(n) {
     if n == 0 {
-        izvedi n
+        return
     }
     else {
-        call function fibonacci with parameters (n - 1)
+        call fibonacci with parameters (n - 1)
     }
+    print n
+}
+
+def function sum with parameters(n) {
+    if n == 0 {
+        return n
+    }
+
+    return n + call sum with parameters(n - 1)
 }

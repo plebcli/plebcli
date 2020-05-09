@@ -38,9 +38,7 @@ public class Function extends CliObject implements Callable, Block {
     }
 
     @Override
-    public Primitive call(List<String> parameterValues) throws InvalidDefinitionException {
-
-        LocalObjectHolder localMemory = new LocalObjectHolder();
+    public Primitive call(List<String> parameterValues, LocalObjectHolder memory) throws InvalidDefinitionException {
 
         if (parameterValues.size() != parameters.size()) {
             throw new IllegalArgumentException("funkciq " + getName() + " ima " + parameters.size() + " na broi parametri, no ti q vikash s " + parameterValues.size());
@@ -49,21 +47,19 @@ public class Function extends CliObject implements Callable, Block {
         ExpressionEvaluator evaluator = new ExpressionEvaluator();
         // construct local variables from parameters
         for (int i = 0; i < parameters.size(); i++) {
-            Variable v = new Variable(parameters.get(i), evaluator.evaluate(localMemory, parameterValues.get(i)).toString());
-            localMemory.addObject(v);
+            Variable v = new Variable(parameters.get(i), evaluator.evaluate(memory, parameterValues.get(i)).toString());
+            memory.addObject(v);
         }
 
-        return CliUtils.processBlock(localMemory, getBody());
+        return CliUtils.processBlock(memory, getBody());
     }
 
     @Override
-    public Primitive call(ObjectHolder callerMemory) throws InvalidDefinitionException {
-
-        LocalObjectHolder localMemory = new LocalObjectHolder();
+    public Primitive call(LocalObjectHolder localMemory) throws InvalidDefinitionException {
 
         // get only the variables from the callers memory
         for (String param : parameters) {
-            List<CliObject> objects = callerMemory.getObjectByName(param);
+            List<CliObject> objects = localMemory.getObjectByName(param);
             if (objects.isEmpty()) {
                 throw new IllegalArgumentException("funkciq " + getName() + " nqma stoinost za parametur " + param);
             }

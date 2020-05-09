@@ -1,19 +1,19 @@
 package com.zaki.plebcli.lang.core.object.impl.operator;
 
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
-import com.zaki.plebcli.cli.memory.ObjectHolder;
+import com.zaki.plebcli.cli.memory.LocalObjectHolder;
 import com.zaki.plebcli.lang.CliBoolean;
 import com.zaki.plebcli.lang.Keywords;
 import com.zaki.plebcli.lang.core.expression.ExpressionEvaluator;
 import com.zaki.plebcli.lang.core.object.impl.Block;
 import com.zaki.plebcli.lang.core.object.impl.base.Primitive;
+import com.zaki.plebcli.lang.core.object.impl.base.Void;
 import com.zaki.plebcli.util.CliUtils;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-import com.zaki.plebcli.lang.core.object.impl.base.Void;
 
 public class IfOperator extends Operator implements Block {
 
@@ -88,7 +88,7 @@ public class IfOperator extends Operator implements Block {
     }
 
     @Override
-    public Primitive operate(ObjectHolder memory) throws InvalidDefinitionException {
+    public Primitive operate(LocalObjectHolder memory) throws InvalidDefinitionException {
 
         ExpressionEvaluator evaluator = new ExpressionEvaluator();
         for (Pair<String, Stack<String>> condition : conditions) {
