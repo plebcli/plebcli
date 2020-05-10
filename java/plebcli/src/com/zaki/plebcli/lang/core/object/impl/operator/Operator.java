@@ -13,11 +13,6 @@ public abstract class Operator extends CliObject {
     }
 
     @Override
-    public String toString() {
-        return "operator " + getName();
-    }
-
-    @Override
     protected boolean validate() {
         return false;
     }

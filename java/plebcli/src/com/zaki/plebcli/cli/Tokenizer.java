@@ -6,7 +6,6 @@ import com.zaki.plebcli.cli.memory.GlobalObjectHolder;
 import com.zaki.plebcli.cli.memory.LocalObjectHolder;
 import com.zaki.plebcli.cli.memory.ObjectHolder;
 import com.zaki.plebcli.lang.Keywords;
-import com.zaki.plebcli.lang.core.expression.ExpressionEvaluator;
 import com.zaki.plebcli.lang.core.object.CliObject;
 import com.zaki.plebcli.lang.core.object.impl.Block;
 import com.zaki.plebcli.lang.core.object.impl.Variable;
@@ -25,7 +24,7 @@ import java.util.regex.Pattern;
 
 public class Tokenizer {
 
-    private static final String NUMBER_REGEX = "^[0-9]+$";
+    private static final String NUMBER_REGEX = "^-?[0-9]+$";
 
     private static final String STRING_REGEX = "^\"(.*?)\"$";
 
@@ -105,12 +104,17 @@ public class Tokenizer {
 
         CliObject obj = null;
 
-        // check for prefix operators
-        for (String operatorName : OperatorBuilder.getPrefixOperators()) {
-            if (s.startsWith(operatorName)) {
-                s = s.substring(operatorName.length()).trim();
-                obj = processPrefixOperator(operatorName, s, userInput, i + 1);
-                break;
+        // check for return operator
+        if (s.startsWith(Keywords.RETURN)) {
+            s = s.substring(Keywords.RETURN.length()).trim();
+            obj = processPrefixOperator(Keywords.RETURN, s, userInput, i + 1);
+        }
+
+        if (obj == null) {
+            // check for conditional operators
+            if (s.startsWith(Keywords.IF)) {
+                s = s.substring(Keywords.IF.length()).trim();
+                obj = processPrefixOperator(Keywords.IF, s, userInput, i + 1);
             }
         }
 
@@ -123,6 +127,17 @@ public class Tokenizer {
                 operatorName = CliUtils.SPACE + operatorName + CliUtils.SPACE;
                 if (s.contains(operatorName) && !s.startsWith(operatorName) && !s.endsWith(operatorName)) {
                     obj = processInfixOperator(operatorName.trim(), s);
+                    break;
+                }
+            }
+        }
+
+        if (obj == null) {
+            // check for prefix operators
+            for (String operatorName : OperatorBuilder.getPrefixOperators()) {
+                if (s.startsWith(operatorName)) {
+                    s = s.substring(operatorName.length()).trim();
+                    obj = processPrefixOperator(operatorName, s, userInput, i + 1);
                     break;
                 }
             }
@@ -216,8 +231,7 @@ public class Tokenizer {
         // expected is assigning operation
         if (s.startsWith(Keywords.ASSIGN)) {
             // get the value or expression
-            s = CliUtils.removeInputPart(s, Keywords.ASSIGN);
-            value = new ExpressionEvaluator().evaluate(current, s).toString();
+            value = CliUtils.removeInputPart(s, Keywords.ASSIGN);
         } else {
             throw new InvalidDefinitionException("Nevalidna stoinost " + s);
         }

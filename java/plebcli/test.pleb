@@ -1,18 +1,19 @@
 def function main with parameters() {
-    def var x = 2 ^ 3
-    print x
 
-    print call sum_of_0_to_n_powered_to_k with parameters (x, enter k)
+    print "N-toto chilo na fibonacci e"
+    print call fib with parameters (enter n)
 }
 
-def function fibonacci with parameters(n) {
-    if n == 0 {
-        return
+def function fib with parameters(n) {
+
+    if n <= 0 {
+        return 0
     }
-    else {
-        call fibonacci with parameters (n - 1)
+    if n == 1 {
+        return 1
     }
-    print n
+
+    return call fib with parameters (n - 1) + call fib with parameters (n - 2)
 }
 
 def function sum_of_0_to_n_powered_to_k with parameters(n, k) {
@@ -22,4 +23,12 @@ def function sum_of_0_to_n_powered_to_k with parameters(n, k) {
 
     def var result = n ^ k
     return result + call sum_of_0_to_n_powered_to_k with parameters(n - 1, k)
+}
+
+def function max with parameters(a, b) {
+    if a > b {
+        return a
+    }
+
+    return b
 }

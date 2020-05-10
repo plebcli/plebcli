@@ -28,7 +28,7 @@ public class ExpressionEvaluator {
         if (obj.getObjectType() == ObjectType.PRIMITIVE) {
             result = (Primitive) obj;
         } else if (obj.getObjectType() == ObjectType.VARIABLE) {
-            result = new Primitive(((Variable) obj).getValue());
+            result = new Primitive(((Variable) obj).getValue(memory));
         } else if (obj.getObjectType() == ObjectType.FUNCTION) {
             result = ((Function) obj).call(memory.clone());
         } else if (obj instanceof Operator) {

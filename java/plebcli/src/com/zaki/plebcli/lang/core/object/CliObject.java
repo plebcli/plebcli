@@ -1,6 +1,7 @@
 package com.zaki.plebcli.lang.core.object;
 
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
+import com.zaki.plebcli.cli.memory.LocalObjectHolder;
 import com.zaki.plebcli.lang.Keywords;
 
 import java.util.Objects;
@@ -26,8 +27,6 @@ public abstract class CliObject {
     public ObjectType getObjectType() {
         return objectType;
     }
-
-    public abstract String toString();
 
     @Override
     public boolean equals(Object o) {

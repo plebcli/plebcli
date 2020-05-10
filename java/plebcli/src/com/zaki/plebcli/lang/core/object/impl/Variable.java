@@ -1,7 +1,9 @@
 package com.zaki.plebcli.lang.core.object.impl;
 
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
+import com.zaki.plebcli.cli.memory.LocalObjectHolder;
 import com.zaki.plebcli.lang.Keywords;
+import com.zaki.plebcli.lang.core.expression.ExpressionEvaluator;
 import com.zaki.plebcli.lang.core.object.CliObject;
 import com.zaki.plebcli.lang.core.object.ObjectType;
 
@@ -13,13 +15,9 @@ public class Variable extends CliObject {
         super(name, ObjectType.VARIABLE);
         this.value = value;
     }
-    public String getValue() {
-        return value;
-    }
 
-    @Override
-    public String toString() {
-        return Keywords.VARIABLE + " [" + getName() + ", " + getValue() + "]";
+    public String getValue(LocalObjectHolder memory) {
+        return new ExpressionEvaluator().evaluate(memory, value).toString();
     }
 
     @Override
