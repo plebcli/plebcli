@@ -55,6 +55,14 @@ public class Keywords {
 
     public static final String VOID = "void";
 
+    public static final String ARRAY = "array";
+
+    public static final String ABS = "abs";
+
+    public static final String MODULO = "%";
+
+    public static final String POWER = "^";
+
     private static Set<String> keywords = new HashSet<>();
 
     // TODO add all keywords here and think of way to simplify it

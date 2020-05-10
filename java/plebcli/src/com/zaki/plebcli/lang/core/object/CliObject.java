@@ -12,10 +12,10 @@ public abstract class CliObject {
     private final String name;
 
     public CliObject(String name, ObjectType objectType) throws InvalidDefinitionException {
-        if (validate() && Keywords.getKeywords().contains(name)) {
+        if (validate() && Keywords.getKeywords().contains(name.trim())) {
             throw new InvalidDefinitionException(name + " e zapazena kliuchova duma");
         }
-        this.name = name;
+        this.name = name.trim();
         this.objectType = objectType;
     }
 

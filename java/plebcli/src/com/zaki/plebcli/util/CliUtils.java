@@ -6,12 +6,10 @@ import com.zaki.plebcli.lang.core.object.impl.base.Primitive;
 import com.zaki.plebcli.lang.core.object.impl.base.Void;
 import com.zaki.plebcli.cli.Tokenizer;
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
-import com.zaki.plebcli.cli.memory.ObjectHolder;
 import com.zaki.plebcli.lang.core.object.CliObject;
 import com.zaki.plebcli.lang.core.object.impl.Callable;
 import com.zaki.plebcli.lang.core.object.impl.operator.Operator;
-import com.zaki.plebcli.lang.core.object.impl.operator.in.InOperator;
-import com.zaki.plebcli.lang.core.object.impl.operator.infix.InfixOperator;
+import com.zaki.plebcli.lang.core.object.impl.operator.prefix.in.InOperator;
 
 import java.util.List;
 import java.util.Stack;
@@ -50,7 +48,7 @@ public final class CliUtils {
             } else if (o instanceof Operator) {
                 result = ((Operator) o).operate((o instanceof InOperator) ? memory : memory.clone());
             }
-            if (!(result instanceof Void)) {
+            if (o.getObjectType() != ObjectType.VARIABLE && o.getObjectType() != ObjectType.PRIMITIVE && !(result instanceof Void)) {
                 return result;
             }
         }

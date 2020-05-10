@@ -1,6 +1,8 @@
 def function main with parameters() {
-    call fibonacci with parameters (enter x)
-    print call sum with parameters (enter y)
+    def var x = 2 ^ 3
+    print x
+
+    print call sum_of_0_to_n_powered_to_k with parameters (x, enter k)
 }
 
 def function fibonacci with parameters(n) {
@@ -13,10 +15,11 @@ def function fibonacci with parameters(n) {
     print n
 }
 
-def function sum with parameters(n) {
+def function sum_of_0_to_n_powered_to_k with parameters(n, k) {
     if n == 0 {
         return n
     }
 
-    return n + call sum with parameters(n - 1)
+    def var result = n ^ k
+    return result + call sum_of_0_to_n_powered_to_k with parameters(n - 1, k)
 }

@@ -117,8 +117,12 @@ public class Tokenizer {
         if (obj == null) {
             // check for infix operators
             for (String operatorName : OperatorBuilder.getInfixOperators()) {
+                // Add space before and after the keyword to check whether it is contained instead of te whole keyword
+                // this is in order to avoid situations such when the function name is called sum_POWERed_to_k
+                // we already have operator with name POWER
+                operatorName = CliUtils.SPACE + operatorName + CliUtils.SPACE;
                 if (s.contains(operatorName) && !s.startsWith(operatorName) && !s.endsWith(operatorName)) {
-                    obj = processInfixOperator(operatorName, s);
+                    obj = processInfixOperator(operatorName.trim(), s);
                     break;
                 }
             }

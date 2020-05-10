@@ -1,4 +1,4 @@
-package com.zaki.plebcli.lang.core.object.impl.operator;
+package com.zaki.plebcli.lang.core.object.impl.operator.prefix;
 
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
 import com.zaki.plebcli.cli.memory.LocalObjectHolder;
@@ -8,6 +8,7 @@ import com.zaki.plebcli.lang.core.expression.ExpressionEvaluator;
 import com.zaki.plebcli.lang.core.object.impl.Block;
 import com.zaki.plebcli.lang.core.object.impl.base.Primitive;
 import com.zaki.plebcli.lang.core.object.impl.base.Void;
+import com.zaki.plebcli.lang.core.object.impl.operator.Operator;
 import com.zaki.plebcli.util.CliUtils;
 import javafx.util.Pair;
 

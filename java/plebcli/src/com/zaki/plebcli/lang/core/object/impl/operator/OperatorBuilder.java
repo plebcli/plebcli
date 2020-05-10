@@ -3,13 +3,14 @@ package com.zaki.plebcli.lang.core.object.impl.operator;
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
 import com.zaki.plebcli.lang.Keywords;
 import com.zaki.plebcli.lang.core.object.impl.Block;
-import com.zaki.plebcli.lang.core.object.impl.operator.in.InOperator;
-import com.zaki.plebcli.lang.core.object.impl.operator.infix.arithmetic.DivideOperator;
-import com.zaki.plebcli.lang.core.object.impl.operator.infix.arithmetic.MinusOperator;
-import com.zaki.plebcli.lang.core.object.impl.operator.infix.arithmetic.MultiplyOperator;
-import com.zaki.plebcli.lang.core.object.impl.operator.infix.arithmetic.PlusOperator;
+import com.zaki.plebcli.lang.core.object.impl.operator.infix.arithmetic.*;
 import com.zaki.plebcli.lang.core.object.impl.operator.infix.comparison.*;
-import com.zaki.plebcli.lang.core.object.impl.operator.out.OutOperator;
+import com.zaki.plebcli.lang.core.object.impl.operator.prefix.CallOperator;
+import com.zaki.plebcli.lang.core.object.impl.operator.prefix.IfOperator;
+import com.zaki.plebcli.lang.core.object.impl.operator.prefix.ReturnOperator;
+import com.zaki.plebcli.lang.core.object.impl.operator.prefix.arithmetic.AbsOperator;
+import com.zaki.plebcli.lang.core.object.impl.operator.prefix.in.InOperator;
+import com.zaki.plebcli.lang.core.object.impl.operator.prefix.out.OutOperator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,8 @@ public class OperatorBuilder {
         prefixOperators.put(Keywords.OUT, OutOperator.class);
         prefixOperators.put(Keywords.IN, InOperator.class);
         prefixOperators.put(Keywords.RETURN, ReturnOperator.class);
+        prefixOperators.put(Keywords.ABS, AbsOperator.class);
+        prefixOperators.put(Keywords.POWER, PowerOperator.class);
     }
 
     private static final Map<String, Class<? extends Operator>> infixOperators = new HashMap<>();
@@ -40,6 +43,8 @@ public class OperatorBuilder {
         infixOperators.put(Keywords.LESS_THAN_OR_EQUAL, LessThanOrEqualOperator.class);
         infixOperators.put(Keywords.GREATER_THAN, GreaterThanOperator.class);
         infixOperators.put(Keywords.GREATER_THAN_OR_EQUAL, GreaterThanOrEqualOperator.class);
+        infixOperators.put(Keywords.MODULO, ModuloOperator.class);
+        infixOperators.put(Keywords.POWER, PowerOperator.class);
     }
 
     private OperatorBuilder() {

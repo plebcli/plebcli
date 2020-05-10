@@ -1,4 +1,4 @@
-package com.zaki.plebcli.lang.core.object.impl.operator;
+package com.zaki.plebcli.lang.core.object.impl.operator.prefix;
 
 import com.zaki.plebcli.cli.exception.InvalidDefinitionException;
 import com.zaki.plebcli.cli.memory.GlobalObjectHolder;
@@ -8,6 +8,7 @@ import com.zaki.plebcli.lang.core.object.CliObject;
 import com.zaki.plebcli.lang.core.object.impl.Callable;
 import com.zaki.plebcli.lang.core.object.impl.base.Primitive;
 import com.zaki.plebcli.lang.core.object.impl.fn.Function;
+import com.zaki.plebcli.lang.core.object.impl.operator.Operator;
 import com.zaki.plebcli.util.CliUtils;
 
 import java.util.ArrayList;
@@ -54,7 +55,9 @@ public class CallOperator extends Operator {
 
             if (!"".equals(parametersStr)) {
                 String[] parametersPart = parametersStr.split(CliUtils.COMMA);
-                p.addAll(Arrays.asList(parametersPart));
+                for (String param : parametersPart) {
+                    p.add(param.trim());
+                }
             }
         } else {
             throw new InvalidDefinitionException("Nevalidna stoinost " + callLine);
